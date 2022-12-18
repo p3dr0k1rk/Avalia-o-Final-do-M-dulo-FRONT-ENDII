@@ -45,16 +45,16 @@ const createRecado =(recado)=> {
 }
 
 //CRUD - UPDATE
-const updateRecado = (i, recado)=> {
+const updateRecado = (index, recado)=> {
     const dbRecado = readRecado()
-    dbRecado[i] = recado
+    dbRecado[index] = recado
     setLocalStorage(dbRecado)
 }
 
 //CRUD - DELETE
-const deleteRecado =(i)=>{
+const deleteRecado =(index)=>{
     const dbRecado = readRecado()
-    dbRecado.splice(i,1)
+    dbRecado.splice(index,1)
     setLocalStorage(dbRecado)
 }
 
@@ -69,8 +69,14 @@ const saveRecado =()=>{
             descricao: document.getElementById('description-creat-input').value,
             detalhamento: document.getElementById('detail-creat-input').value,
         }
+        const index = document.getElementById('description-creat-input').dataset.index
+        if(index == 'new'){
         createRecado(recado)
-        updateTable()     
+        updateTable()   
+        }else{
+           updateRecado(index, recado)
+           updateTable()
+        }  
     }
 }
 
@@ -102,11 +108,13 @@ const updateTable =  () =>{
 const fillFields = (recado) => {
     document.getElementById('description-creat-input').value = recado.descricao
     document.getElementById('detail-creat-input').value = recado.detalhamento
+    document.getElementById('description-creat-input').dataset.index = recado.index
 }
 const editRecado = (index) =>{
     const recado = readRecado()[index]
+    recado.index = index
     fillFields(recado)
-    openModal()
+    
 }
 
 const editDelete =(event) =>{
@@ -116,7 +124,12 @@ const editDelete =(event) =>{
         if(action == 'edit'){
             editRecado(index)
         }else{
-            console.log('editando o cliente');
+            const recado = readRecado()[index]
+            const response = confirm(`Deseja realmente excluir o recado ${recado.id}`)
+            if (response){
+                deleteRecado(index)
+                updateTable()
+            }
         }
 
     }
